@@ -10,6 +10,14 @@
 
 
 def sum1(arr, target):
+    """
+    不能重复利用，
+    这里的思维是：遍历数组，将数组需要用到的值记录下来
+    如果发现新遍历的值在需求记录中存在，那么
+    :param arr:
+    :param target:
+    :return:
+    """
     map = {}
     for i in range(len(arr)):
         need = target - arr[i]
