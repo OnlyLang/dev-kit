@@ -6,7 +6,7 @@ data_dir = "./MNIST_DATA"
 # 定义日志存放目录
 log_dir = "./MNIST_LOG"
 # 训练的最大步数
-max_steps = 1000
+max_steps = 100
 # dropout 率
 dropout = 0.9
 # 学习率
@@ -115,6 +115,8 @@ test_writer = tf.summary.FileWriter(log_dir + "/test")
 # 运行初始化所有变量
 tf.global_variables_initializer().run()
 
+saver = tf.train.Saver(save_relative_paths=True)
+
 
 # 数据获取
 def feed_dict(train):
@@ -127,14 +129,29 @@ def feed_dict(train):
     return {x: xs, y_: ys, keep_prob: k}
 
 
-for i in range(max_steps):
-    if i % 10 == 0:
-        summary, acc = session.run([merged, accuracy], feed_dict=feed_dict(False))
-        test_writer.add_summary(summary, i)
-        print("accuracy at step %s: %s" % (i, acc))
-    else:
-        summary, _ = session.run([merged, train_step], feed_dict=feed_dict(True))
-        train_writer.add_summary(summary, i)
+def read_x():
+    xs, ys = mnist.train.next_batch(1)
+    return xs, ys
 
-train_writer.close()
-test_writer.close()
+
+# for i in range(max_steps):
+#     if i % 10 == 0:
+#         summary, acc = session.run([merged, accuracy], feed_dict=feed_dict(False))
+#         test_writer.add_summary(summary, i)
+#         print("accuracy at step %s: %s" % (i, acc))
+#     else:
+#         summary, _ = session.run([merged, train_step], feed_dict=feed_dict(True))
+#         train_writer.add_summary(summary, i)
+
+# train_writer.close()
+# test_writer.close()
+
+# saver.save(session, "./MNIST_MODEL/mnist")
+
+saver.restore(session, "./MNIST_MODEL/mnist")
+import numpy as np
+
+x_, y__ = read_x()
+pred = session.run(y, feed_dict={x: np.array(x_, np.float), keep_prob: 1.0})
+print("real:" + str(np.argmax(y__)))
+print(np.argmax(pred, 1))
